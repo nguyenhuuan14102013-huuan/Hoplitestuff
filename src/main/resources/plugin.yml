@@ -1,0 +1,13 @@
+name: Hoplite
+version: 1.0.0
+main: Lightapple.hoplite.Hoplite
+api-version: '1.21.11'
+description: Recreates Hoplite items, recipes, and custom mechanics.
+
+commands:
+  giverecipebook:
+    description: Gives the Recipe Book to all online players.
+    usage: /giverecipebook
+    permission: hoplite.admin
+    permission-default: op
+    permission-message: "You must be an operator to run this command!"
