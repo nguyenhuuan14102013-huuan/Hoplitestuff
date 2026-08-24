@@ -36,6 +36,11 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final GoldenHead goldenHead;
     private final SmeltersPickaxe smeltersPickaxe;
     private final SuperSmeltersPickaxe superSmeltersPickaxe;
+    private final BlazingCrossbow blazingCrossbow;
+    private final CactusChestplate cactusChestplate;
+    private final BanditLeggings banditLeggings;
+    private final CowboyBoots cowboyBoots;
+    private final SkeletonLeggings skeletonLeggings;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -58,7 +63,12 @@ public class RecipeBook implements Listener, CommandExecutor {
             CrystallizationShard crystallizationShard,
             GoldenHead goldenHead,
             SmeltersPickaxe smeltersPickaxe,
-            SuperSmeltersPickaxe superSmeltersPickaxe
+            SuperSmeltersPickaxe superSmeltersPickaxe,
+            BlazingCrossbow blazingCrossbow,
+            CactusChestplate cactusChestplate,
+            BanditLeggings banditLeggings,
+            CowboyBoots cowboyBoots,
+            SkeletonLeggings skeletonLeggings
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -73,6 +83,11 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.goldenHead = goldenHead;
         this.smeltersPickaxe = smeltersPickaxe;
         this.superSmeltersPickaxe = superSmeltersPickaxe;
+        this.blazingCrossbow = blazingCrossbow;
+        this.cactusChestplate = cactusChestplate;
+        this.banditLeggings = banditLeggings;
+        this.cowboyBoots = cowboyBoots;
+        this.skeletonLeggings = skeletonLeggings;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -144,80 +159,209 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(9, goldenHead.getGoldenHead());
         gui.setItem(10, smeltersPickaxe.getSmeltersPickaxe());
         gui.setItem(11, superSmeltersPickaxe.getSuperSmeltersPickaxe());
+        gui.setItem(12, blazingCrossbow.getBlazingCrossbow());
+        gui.setItem(13, cactusChestplate.getCactusChestplate());
+        gui.setItem(14, banditLeggings.getBanditLeggings());
+        gui.setItem(15, cowboyBoots.getCowboyBoots());
+        gui.setItem(16, skeletonLeggings.getSkeletonLeggings());
 
         player.openInventory(gui);
     }
 
-    public void openSuperSmeltersPickaxeRecipeGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Super Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+    public void openCowboyBootsRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Cowboy Boots", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        // Row 1: Diamond, Iron Ingot, Diamond
-        gui.setItem(2, new ItemStack(Material.DIAMOND));
-        gui.setItem(3, new ItemStack(Material.IRON_INGOT));
-        gui.setItem(4, new ItemStack(Material.DIAMOND));
+        gui.setItem(2, new ItemStack(Material.IRON_CHAIN));
+        gui.setItem(3, new ItemStack(Material.HAY_BLOCK));
+        gui.setItem(4, new ItemStack(Material.IRON_CHAIN));
+        gui.setItem(11, new ItemStack(Material.HAY_BLOCK));
+        gui.setItem(12, new ItemStack(Material.LEATHER_BOOTS));
+        gui.setItem(13, new ItemStack(Material.HAY_BLOCK));
+        gui.setItem(20, new ItemStack(Material.IRON_CHAIN));
+        gui.setItem(21, new ItemStack(Material.HAY_BLOCK));
+        gui.setItem(22, new ItemStack(Material.IRON_CHAIN));
 
-        // Row 2: Coal, Stick, Coal
-        gui.setItem(11, new ItemStack(Material.COAL));
-        gui.setItem(12, new ItemStack(Material.STICK));
-        gui.setItem(13, new ItemStack(Material.COAL));
-
-        // Row 3: Stick in center
-        gui.setItem(21, new ItemStack(Material.STICK));
-
-        gui.setItem(16, superSmeltersPickaxe.getSuperSmeltersPickaxe());
+        gui.setItem(16, cowboyBoots.getCowboyBoots());
         player.openInventory(gui);
     }
 
-    public void openSmeltersPickaxeRecipeGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+    public void openSkeletonLeggingsRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Skeleton Leggings", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        gui.setItem(2, new ItemStack(Material.RAW_IRON));
-        gui.setItem(3, new ItemStack(Material.RAW_IRON));
-        gui.setItem(4, new ItemStack(Material.RAW_IRON));
+        gui.setItem(2, new ItemStack(Material.BONE));
+        gui.setItem(3, new ItemStack(Material.BONE));
+        gui.setItem(4, new ItemStack(Material.BONE));
+        gui.setItem(11, new ItemStack(Material.BONE));
+        gui.setItem(12, new ItemStack(Material.IRON_LEGGINGS));
+        gui.setItem(13, new ItemStack(Material.BONE));
+        gui.setItem(20, new ItemStack(Material.BONE));
+        gui.setItem(22, new ItemStack(Material.BONE));
 
-        gui.setItem(11, new ItemStack(Material.COAL));
-        gui.setItem(12, new ItemStack(Material.STICK));
-        gui.setItem(13, new ItemStack(Material.COAL));
-
-        gui.setItem(21, new ItemStack(Material.STICK));
-
-        gui.setItem(16, smeltersPickaxe.getSmeltersPickaxe());
+        gui.setItem(16, skeletonLeggings.getSkeletonLeggings());
         player.openInventory(gui);
     }
 
-    public void openGoldenHeadRecipeGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Golden Head", NamedTextColor.DARK_GRAY));
+    public void openBanditLeggingsRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Bandit Leggings", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        gui.setItem(2, new ItemStack(Material.GOLD_INGOT));
-        gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
-        gui.setItem(4, new ItemStack(Material.GOLD_INGOT));
-
+        gui.setItem(3, new ItemStack(Material.GLISTERING_MELON_SLICE));
         gui.setItem(11, new ItemStack(Material.GOLD_INGOT));
-        gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(12, new ItemStack(Material.IRON_LEGGINGS));
         gui.setItem(13, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(21, new ItemStack(Material.GLISTERING_MELON_SLICE));
 
-        gui.setItem(20, new ItemStack(Material.GOLD_INGOT));
-        gui.setItem(21, new ItemStack(Material.GOLD_INGOT));
-        gui.setItem(22, new ItemStack(Material.GOLD_INGOT));
-
-        gui.setItem(16, goldenHead.getGoldenHead());
+        gui.setItem(16, banditLeggings.getBanditLeggings());
         player.openInventory(gui);
     }
 
-    public void openCrystallizationShardRecipeGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Crystallization Shard", NamedTextColor.DARK_GRAY));
+    public void openCactusChestplateRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Cactus Chestplate", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        gui.setItem(2, new ItemStack(Material.PLAYER_HEAD));
-        gui.setItem(10, new ItemStack(Material.AMETHYST_SHARD));
-        gui.setItem(11, new ItemStack(Material.HONEY_BOTTLE));
-        gui.setItem(12, new ItemStack(Material.AMETHYST_SHARD));
-        gui.setItem(20, new ItemStack(Material.AMETHYST_SHARD));
+        gui.setItem(2, new ItemStack(Material.CACTUS));
+        gui.setItem(3, new ItemStack(Material.CACTUS));
+        gui.setItem(4, new ItemStack(Material.CACTUS));
+        gui.setItem(11, new ItemStack(Material.CACTUS));
+        gui.setItem(12, new ItemStack(Material.IRON_CHESTPLATE));
+        gui.setItem(13, new ItemStack(Material.CACTUS));
+        gui.setItem(20, new ItemStack(Material.CACTUS));
+        gui.setItem(21, new ItemStack(Material.CACTUS));
+        gui.setItem(22, new ItemStack(Material.CACTUS));
 
-        gui.setItem(16, crystallizationShard.getCrystallizationShard());
+        gui.setItem(16, cactusChestplate.getCactusChestplate());
+        player.openInventory(gui);
+    }
+
+    public void openBlazingCrossbowRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Blazing Crossbow", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.FIRE_CHARGE));
+        gui.setItem(3, new ItemStack(Material.MAGMA_CREAM));
+        gui.setItem(4, new ItemStack(Material.FIRE_CHARGE));
+        gui.setItem(11, new ItemStack(Material.GLOWSTONE_DUST));
+        gui.setItem(12, new ItemStack(Material.CROSSBOW));
+        gui.setItem(13, new ItemStack(Material.GLOWSTONE_DUST));
+        gui.setItem(20, new ItemStack(Material.FIRE_CHARGE));
+        gui.setItem(21, new ItemStack(Material.MAGMA_CREAM));
+        gui.setItem(22, new ItemStack(Material.FIRE_CHARGE));
+
+        gui.setItem(16, blazingCrossbow.getBlazingCrossbow());
+        player.openInventory(gui);
+    }
+
+    public void openLightAppleRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Light Apple", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(11, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(12, new ItemStack(Material.APPLE));
+        gui.setItem(13, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(21, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(16, lightApple.getLightApple());
+        player.openInventory(gui);
+    }
+
+    public void openShortswordRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Shortsword", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(3, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(4, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(11, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(12, new ItemStack(Material.IRON_SWORD));
+        gui.setItem(13, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(20, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(21, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(22, new ItemStack(Material.COPPER_INGOT));
+
+        gui.setItem(16, shortsword.getShortsword());
+        player.openInventory(gui);
+    }
+
+    public void openTridentRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Custom Trident", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.QUARTZ));
+        gui.setItem(4, new ItemStack(Material.QUARTZ));
+        gui.setItem(11, new ItemStack(Material.DIAMOND));
+        gui.setItem(13, new ItemStack(Material.QUARTZ));
+        gui.setItem(20, new ItemStack(Material.DIAMOND));
+
+        gui.setItem(16, customTrident.getTrident());
+        player.openInventory(gui);
+    }
+
+    public void openTotemRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Custom Totem", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(11, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(12, new ItemStack(Material.GHAST_TEAR));
+        gui.setItem(13, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(21, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(16, customTotem.getTotem());
+        player.openInventory(gui);
+    }
+
+    public void openLightAnvilRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Light Anvil", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(3, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(4, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(12, new ItemStack(Material.IRON_BLOCK));
+        gui.setItem(20, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(21, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(22, new ItemStack(Material.IRON_INGOT));
+
+        gui.setItem(16, lightAnvil.getLightAnvil());
+        player.openInventory(gui);
+    }
+
+    public void openBundledArrowsRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Bundled Arrows", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.FLINT));
+        gui.setItem(3, new ItemStack(Material.FLINT));
+        gui.setItem(4, new ItemStack(Material.FLINT));
+        gui.setItem(11, new ItemStack(Material.STICK));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.STICK));
+        gui.setItem(20, new ItemStack(Material.FEATHER));
+        gui.setItem(21, new ItemStack(Material.FEATHER));
+        gui.setItem(22, new ItemStack(Material.FEATHER));
+
+        gui.setItem(16, bundledArrows.getBundledArrows());
+        player.openInventory(gui);
+    }
+
+    public void openShortbowRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Shortbow", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(3, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(4, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(11, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(12, new ItemStack(Material.BOW));
+        gui.setItem(13, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(20, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(21, new ItemStack(Material.COPPER_INGOT));
+        gui.setItem(22, new ItemStack(Material.COPPER_INGOT));
+
+        gui.setItem(16, shortbow.getShortbow());
         player.openInventory(gui);
     }
 
@@ -235,13 +379,69 @@ public class RecipeBook implements Listener, CommandExecutor {
         player.openInventory(gui);
     }
 
-    public void openLightAppleRecipeGUI(Player player) { /* ... */ }
-    public void openShortswordRecipeGUI(Player player) { /* ... */ }
-    public void openTridentRecipeGUI(Player player) { /* ... */ }
-    public void openTotemRecipeGUI(Player player) { /* ... */ }
-    public void openLightAnvilRecipeGUI(Player player) { /* ... */ }
-    public void openBundledArrowsRecipeGUI(Player player) { /* ... */ }
-    public void openShortbowRecipeGUI(Player player) { /* ... */ }
+    public void openCrystallizationShardRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Crystallization Shard", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(10, new ItemStack(Material.AMETHYST_SHARD));
+        gui.setItem(11, new ItemStack(Material.HONEY_BOTTLE));
+        gui.setItem(12, new ItemStack(Material.AMETHYST_SHARD));
+        gui.setItem(20, new ItemStack(Material.AMETHYST_SHARD));
+
+        gui.setItem(16, crystallizationShard.getCrystallizationShard());
+        player.openInventory(gui);
+    }
+
+    public void openGoldenHeadRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Golden Head", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(4, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(11, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(13, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(20, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(21, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(22, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(16, goldenHead.getGoldenHead());
+        player.openInventory(gui);
+    }
+
+    public void openSmeltersPickaxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.RAW_IRON));
+        gui.setItem(3, new ItemStack(Material.RAW_IRON));
+        gui.setItem(4, new ItemStack(Material.RAW_IRON));
+        gui.setItem(11, new ItemStack(Material.COAL));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.COAL));
+        gui.setItem(21, new ItemStack(Material.STICK));
+
+        gui.setItem(16, smeltersPickaxe.getSmeltersPickaxe());
+        player.openInventory(gui);
+    }
+
+    public void openSuperSmeltersPickaxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Super Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.DIAMOND));
+        gui.setItem(3, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(4, new ItemStack(Material.DIAMOND));
+        gui.setItem(11, new ItemStack(Material.COAL));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.COAL));
+        gui.setItem(21, new ItemStack(Material.STICK));
+
+        gui.setItem(16, superSmeltersPickaxe.getSuperSmeltersPickaxe());
+        player.openInventory(gui);
+    }
 
     private void applyBaseRecipeGUI(Inventory gui) {
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -298,6 +498,11 @@ public class RecipeBook implements Listener, CommandExecutor {
                     case 9 -> openGoldenHeadRecipeGUI(player);
                     case 10 -> openSmeltersPickaxeRecipeGUI(player);
                     case 11 -> openSuperSmeltersPickaxeRecipeGUI(player);
+                    case 12 -> openBlazingCrossbowRecipeGUI(player);
+                    case 13 -> openCactusChestplateRecipeGUI(player);
+                    case 14 -> openBanditLeggingsRecipeGUI(player);
+                    case 15 -> openCowboyBootsRecipeGUI(player);
+                    case 16 -> openSkeletonLeggingsRecipeGUI(player);
                 }
             } else if (holder instanceof RecipeDisplayHolder) {
                 if (event.getSlot() == 18) {
