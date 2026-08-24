@@ -21,6 +21,7 @@ public final class Hoplite extends JavaPlugin {
     private BanditLeggings banditLeggings;
     private CowboyBoots cowboyBoots;
     private SkeletonLeggings skeletonLeggings;
+    private AxolotlBoots axolotlBoots;
     private RecipeBook recipeBook;
 
     @Override
@@ -42,6 +43,7 @@ public final class Hoplite extends JavaPlugin {
         this.banditLeggings = new BanditLeggings(this);
         this.cowboyBoots = new CowboyBoots(this);
         this.skeletonLeggings = new SkeletonLeggings(this);
+        this.axolotlBoots = new AxolotlBoots(this);
 
         this.recipeBook = new RecipeBook(
                 this,
@@ -61,7 +63,8 @@ public final class Hoplite extends JavaPlugin {
                 cactusChestplate,
                 banditLeggings,
                 cowboyBoots,
-                skeletonLeggings
+                skeletonLeggings,
+                axolotlBoots
         );
 
         getServer().getPluginManager().registerEvents(recipeBook, this);
@@ -99,4 +102,5 @@ public final class Hoplite extends JavaPlugin {
     public BanditLeggings getBanditLeggings() { return banditLeggings; }
     public CowboyBoots getCowboyBoots() { return cowboyBoots; }
     public SkeletonLeggings getSkeletonLeggings() { return skeletonLeggings; }
+    public AxolotlBoots getAxolotlBoots() { return axolotlBoots; }
 }

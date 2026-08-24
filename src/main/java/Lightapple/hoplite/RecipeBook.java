@@ -41,6 +41,7 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final BanditLeggings banditLeggings;
     private final CowboyBoots cowboyBoots;
     private final SkeletonLeggings skeletonLeggings;
+    private final AxolotlBoots axolotlBoots;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -68,7 +69,8 @@ public class RecipeBook implements Listener, CommandExecutor {
             CactusChestplate cactusChestplate,
             BanditLeggings banditLeggings,
             CowboyBoots cowboyBoots,
-            SkeletonLeggings skeletonLeggings
+            SkeletonLeggings skeletonLeggings,
+            AxolotlBoots axolotlBoots
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -88,6 +90,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.banditLeggings = banditLeggings;
         this.cowboyBoots = cowboyBoots;
         this.skeletonLeggings = skeletonLeggings;
+        this.axolotlBoots = axolotlBoots;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -164,7 +167,22 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(14, banditLeggings.getBanditLeggings());
         gui.setItem(15, cowboyBoots.getCowboyBoots());
         gui.setItem(16, skeletonLeggings.getSkeletonLeggings());
+        gui.setItem(17, axolotlBoots.getAxolotlBoots());
 
+        player.openInventory(gui);
+    }
+
+    public void openAxolotlBootsRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Axolotl Boots", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.AXOLOTL_BUCKET));
+        gui.setItem(11, new ItemStack(Material.GLOW_BERRIES));
+        gui.setItem(12, new ItemStack(Material.DIAMOND_BOOTS));
+        gui.setItem(13, new ItemStack(Material.GLOW_BERRIES));
+        gui.setItem(21, new ItemStack(Material.SPORE_BLOSSOM));
+
+        gui.setItem(16, axolotlBoots.getAxolotlBoots());
         player.openInventory(gui);
     }
 
@@ -503,6 +521,7 @@ public class RecipeBook implements Listener, CommandExecutor {
                     case 14 -> openBanditLeggingsRecipeGUI(player);
                     case 15 -> openCowboyBootsRecipeGUI(player);
                     case 16 -> openSkeletonLeggingsRecipeGUI(player);
+                    case 17 -> openAxolotlBootsRecipeGUI(player);
                 }
             } else if (holder instanceof RecipeDisplayHolder) {
                 if (event.getSlot() == 18) {
