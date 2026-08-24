@@ -34,6 +34,8 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final LightNetheriteSword lightNetheriteSword;
     private final CrystallizationShard crystallizationShard;
     private final GoldenHead goldenHead;
+    private final SmeltersPickaxe smeltersPickaxe;
+    private final SuperSmeltersPickaxe superSmeltersPickaxe;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -54,7 +56,9 @@ public class RecipeBook implements Listener, CommandExecutor {
             Shortbow shortbow,
             LightNetheriteSword lightNetheriteSword,
             CrystallizationShard crystallizationShard,
-            GoldenHead goldenHead
+            GoldenHead goldenHead,
+            SmeltersPickaxe smeltersPickaxe,
+            SuperSmeltersPickaxe superSmeltersPickaxe
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -67,6 +71,8 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.lightNetheriteSword = lightNetheriteSword;
         this.crystallizationShard = crystallizationShard;
         this.goldenHead = goldenHead;
+        this.smeltersPickaxe = smeltersPickaxe;
+        this.superSmeltersPickaxe = superSmeltersPickaxe;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -136,7 +142,48 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(7, lightNetheriteSword.getLightNetheriteSword());
         gui.setItem(8, crystallizationShard.getCrystallizationShard());
         gui.setItem(9, goldenHead.getGoldenHead());
+        gui.setItem(10, smeltersPickaxe.getSmeltersPickaxe());
+        gui.setItem(11, superSmeltersPickaxe.getSuperSmeltersPickaxe());
 
+        player.openInventory(gui);
+    }
+
+    public void openSuperSmeltersPickaxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Super Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        // Row 1: Diamond, Iron Ingot, Diamond
+        gui.setItem(2, new ItemStack(Material.DIAMOND));
+        gui.setItem(3, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(4, new ItemStack(Material.DIAMOND));
+
+        // Row 2: Coal, Stick, Coal
+        gui.setItem(11, new ItemStack(Material.COAL));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.COAL));
+
+        // Row 3: Stick in center
+        gui.setItem(21, new ItemStack(Material.STICK));
+
+        gui.setItem(16, superSmeltersPickaxe.getSuperSmeltersPickaxe());
+        player.openInventory(gui);
+    }
+
+    public void openSmeltersPickaxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Smelter's Pickaxe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.RAW_IRON));
+        gui.setItem(3, new ItemStack(Material.RAW_IRON));
+        gui.setItem(4, new ItemStack(Material.RAW_IRON));
+
+        gui.setItem(11, new ItemStack(Material.COAL));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.COAL));
+
+        gui.setItem(21, new ItemStack(Material.STICK));
+
+        gui.setItem(16, smeltersPickaxe.getSmeltersPickaxe());
         player.openInventory(gui);
     }
 
@@ -144,7 +191,6 @@ public class RecipeBook implements Listener, CommandExecutor {
         Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Golden Head", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        // 3x3 Crafting grid preview (8 Gold Ingots surrounding 1 Player Head)
         gui.setItem(2, new ItemStack(Material.GOLD_INGOT));
         gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
         gui.setItem(4, new ItemStack(Material.GOLD_INGOT));
@@ -250,6 +296,8 @@ public class RecipeBook implements Listener, CommandExecutor {
                     case 7 -> openLightNetheriteSwordRecipeGUI(player);
                     case 8 -> openCrystallizationShardRecipeGUI(player);
                     case 9 -> openGoldenHeadRecipeGUI(player);
+                    case 10 -> openSmeltersPickaxeRecipeGUI(player);
+                    case 11 -> openSuperSmeltersPickaxeRecipeGUI(player);
                 }
             } else if (holder instanceof RecipeDisplayHolder) {
                 if (event.getSlot() == 18) {
