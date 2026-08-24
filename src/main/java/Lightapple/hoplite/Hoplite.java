@@ -16,11 +16,15 @@ public final class Hoplite extends JavaPlugin {
         Shortbow shortbow = new Shortbow(this);
         LightNetheriteSword lightNetheriteSword = new LightNetheriteSword(this);
         CrystallizationShard crystallizationShard = new CrystallizationShard(this);
+        GoldenHead goldenHead = new GoldenHead(this);
+        CustomPlayerHead customPlayerHead = new CustomPlayerHead(this);
 
         // Register event listeners for items with right-click / interactive mechanics
         getServer().getPluginManager().registerEvents(crystallizationShard, this);
+        getServer().getPluginManager().registerEvents(goldenHead, this);
+        getServer().getPluginManager().registerEvents(customPlayerHead, this);
 
-        // Register Recipe Book GUI listener and command
+        // Register Recipe Book GUI listener and command (10 craftable items)
         RecipeBook recipeBook = new RecipeBook(
                 this,
                 lightApple,
@@ -31,7 +35,8 @@ public final class Hoplite extends JavaPlugin {
                 bundledArrows,
                 shortbow,
                 lightNetheriteSword,
-                crystallizationShard
+                crystallizationShard,
+                goldenHead
         );
 
         getServer().getPluginManager().registerEvents(recipeBook, this);

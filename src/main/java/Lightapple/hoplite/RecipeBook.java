@@ -33,6 +33,7 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final Shortbow shortbow;
     private final LightNetheriteSword lightNetheriteSword;
     private final CrystallizationShard crystallizationShard;
+    private final GoldenHead goldenHead;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -42,7 +43,19 @@ public class RecipeBook implements Listener, CommandExecutor {
         @Override public Inventory getInventory() { return null; }
     }
 
-    public RecipeBook(Hoplite plugin, LightApple lightApple, Shortsword shortsword, CustomTrident customTrident, CustomTotem customTotem, LightAnvil lightAnvil, BundledArrows bundledArrows, Shortbow shortbow, LightNetheriteSword lightNetheriteSword, CrystallizationShard crystallizationShard) {
+    public RecipeBook(
+            Hoplite plugin,
+            LightApple lightApple,
+            Shortsword shortsword,
+            CustomTrident customTrident,
+            CustomTotem customTotem,
+            LightAnvil lightAnvil,
+            BundledArrows bundledArrows,
+            Shortbow shortbow,
+            LightNetheriteSword lightNetheriteSword,
+            CrystallizationShard crystallizationShard,
+            GoldenHead goldenHead
+    ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
         this.shortsword = shortsword;
@@ -53,6 +66,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.shortbow = shortbow;
         this.lightNetheriteSword = lightNetheriteSword;
         this.crystallizationShard = crystallizationShard;
+        this.goldenHead = goldenHead;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -121,7 +135,29 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(6, shortbow.getShortbow());
         gui.setItem(7, lightNetheriteSword.getLightNetheriteSword());
         gui.setItem(8, crystallizationShard.getCrystallizationShard());
+        gui.setItem(9, goldenHead.getGoldenHead());
 
+        player.openInventory(gui);
+    }
+
+    public void openGoldenHeadRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Golden Head", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        // 3x3 Crafting grid preview (8 Gold Ingots surrounding 1 Player Head)
+        gui.setItem(2, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(3, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(4, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(11, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(13, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(20, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(21, new ItemStack(Material.GOLD_INGOT));
+        gui.setItem(22, new ItemStack(Material.GOLD_INGOT));
+
+        gui.setItem(16, goldenHead.getGoldenHead());
         player.openInventory(gui);
     }
 
@@ -153,7 +189,6 @@ public class RecipeBook implements Listener, CommandExecutor {
         player.openInventory(gui);
     }
 
-    // Placeholders for your other existing item recipe displays
     public void openLightAppleRecipeGUI(Player player) { /* ... */ }
     public void openShortswordRecipeGUI(Player player) { /* ... */ }
     public void openTridentRecipeGUI(Player player) { /* ... */ }
@@ -214,6 +249,7 @@ public class RecipeBook implements Listener, CommandExecutor {
                     case 6 -> openShortbowRecipeGUI(player);
                     case 7 -> openLightNetheriteSwordRecipeGUI(player);
                     case 8 -> openCrystallizationShardRecipeGUI(player);
+                    case 9 -> openGoldenHeadRecipeGUI(player);
                 }
             } else if (holder instanceof RecipeDisplayHolder) {
                 if (event.getSlot() == 18) {
