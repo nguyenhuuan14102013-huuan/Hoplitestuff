@@ -22,6 +22,12 @@ public final class Hoplite extends JavaPlugin {
     private CowboyBoots cowboyBoots;
     private SkeletonLeggings skeletonLeggings;
     private AxolotlBoots axolotlBoots;
+    private AgonyPotion agonyPotion;
+    private CustomBundle customBundle;
+    private VerySuspiciousStew verySuspiciousStew;
+    private CustomPlayerHead customPlayerHead;
+    private Panacea panacea;
+    private CustomFishingRod customFishingRod;
     private RecipeBook recipeBook;
 
     @Override
@@ -44,6 +50,12 @@ public final class Hoplite extends JavaPlugin {
         this.cowboyBoots = new CowboyBoots(this);
         this.skeletonLeggings = new SkeletonLeggings(this);
         this.axolotlBoots = new AxolotlBoots(this);
+        this.agonyPotion = new AgonyPotion(this);
+        this.customBundle = new CustomBundle(this);
+        this.verySuspiciousStew = new VerySuspiciousStew(this);
+        this.customPlayerHead = new CustomPlayerHead(this);
+        this.panacea = new Panacea(this);
+        this.customFishingRod = new CustomFishingRod(this);
 
         this.recipeBook = new RecipeBook(
                 this,
@@ -64,15 +76,30 @@ public final class Hoplite extends JavaPlugin {
                 banditLeggings,
                 cowboyBoots,
                 skeletonLeggings,
-                axolotlBoots
+                axolotlBoots,
+                agonyPotion,
+                customBundle,
+                verySuspiciousStew,
+                panacea,
+                customFishingRod
         );
 
+        // Register listeners
         getServer().getPluginManager().registerEvents(recipeBook, this);
+        getServer().getPluginManager().registerEvents(customBundle, this);
+        getServer().getPluginManager().registerEvents(verySuspiciousStew, this);
+        getServer().getPluginManager().registerEvents(customPlayerHead, this);
+        getServer().getPluginManager().registerEvents(panacea, this);
+        getServer().getPluginManager().registerEvents(customFishingRod, this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new CowboyBootsListener(this), this);
         getServer().getPluginManager().registerEvents(new SkeletonLeggingsListener(this), this);
 
+        // Register commands
+        if (getCommand("giverecipebook") != null) {
+            getCommand("giverecipebook").setExecutor(recipeBook);
+        }
         if (getCommand("recipebook") != null) {
             getCommand("recipebook").setExecutor(recipeBook);
         }
@@ -103,4 +130,10 @@ public final class Hoplite extends JavaPlugin {
     public CowboyBoots getCowboyBoots() { return cowboyBoots; }
     public SkeletonLeggings getSkeletonLeggings() { return skeletonLeggings; }
     public AxolotlBoots getAxolotlBoots() { return axolotlBoots; }
+    public AgonyPotion getAgonyPotion() { return agonyPotion; }
+    public CustomBundle getCustomBundle() { return customBundle; }
+    public VerySuspiciousStew getVerySuspiciousStew() { return verySuspiciousStew; }
+    public CustomPlayerHead getCustomPlayerHead() { return customPlayerHead; }
+    public Panacea getPanacea() { return panacea; }
+    public CustomFishingRod getCustomFishingRod() { return customFishingRod; }
 }

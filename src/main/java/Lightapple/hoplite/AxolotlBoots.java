@@ -33,7 +33,6 @@ public class AxolotlBoots implements Listener {
             meta.displayName(Component.text("Axolotl Boots", NamedTextColor.LIGHT_PURPLE)
                     .decoration(TextDecoration.ITALIC, false));
 
-            // CustomModelData 2 maps to civilization:item/armor/axolotl/boots
             meta.setCustomModelData(2);
 
             meta.addEnchant(Enchantment.DEPTH_STRIDER, 2, true);
@@ -55,7 +54,7 @@ public class AxolotlBoots implements Listener {
         return boots;
     }
 
-    public void registerRecipe() {
+    private void registerRecipe() {
         NamespacedKey key = new NamespacedKey(plugin, "axolotl_boots");
 
         if (Bukkit.getRecipe(key) != null) {

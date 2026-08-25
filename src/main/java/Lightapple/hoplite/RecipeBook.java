@@ -42,6 +42,11 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final CowboyBoots cowboyBoots;
     private final SkeletonLeggings skeletonLeggings;
     private final AxolotlBoots axolotlBoots;
+    private final AgonyPotion agonyPotion;
+    private final CustomBundle customBundle;
+    private final VerySuspiciousStew verySuspiciousStew;
+    private final Panacea panacea;
+    private final CustomFishingRod customFishingRod;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -70,7 +75,12 @@ public class RecipeBook implements Listener, CommandExecutor {
             BanditLeggings banditLeggings,
             CowboyBoots cowboyBoots,
             SkeletonLeggings skeletonLeggings,
-            AxolotlBoots axolotlBoots
+            AxolotlBoots axolotlBoots,
+            AgonyPotion agonyPotion,
+            CustomBundle customBundle,
+            VerySuspiciousStew verySuspiciousStew,
+            Panacea panacea,
+            CustomFishingRod customFishingRod
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -91,6 +101,11 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.cowboyBoots = cowboyBoots;
         this.skeletonLeggings = skeletonLeggings;
         this.axolotlBoots = axolotlBoots;
+        this.agonyPotion = agonyPotion;
+        this.customBundle = customBundle;
+        this.verySuspiciousStew = verySuspiciousStew;
+        this.panacea = panacea;
+        this.customFishingRod = customFishingRod;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -168,7 +183,81 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(15, cowboyBoots.getCowboyBoots());
         gui.setItem(16, skeletonLeggings.getSkeletonLeggings());
         gui.setItem(17, axolotlBoots.getAxolotlBoots());
+        gui.setItem(18, agonyPotion.getAgonyPotion());
+        gui.setItem(19, customBundle.getCustomBundle());
+        gui.setItem(20, verySuspiciousStew.getVerySuspiciousStew());
+        gui.setItem(21, panacea.getPanacea());
+        gui.setItem(22, customFishingRod.getCustomFishingRod());
 
+        player.openInventory(gui);
+    }
+
+    public void openCustomFishingRodRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Barbed Rod", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(4, new ItemStack(Material.STICK));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(13, new ItemStack(Material.STRING));
+        gui.setItem(20, new ItemStack(Material.STICK));
+        gui.setItem(22, new ItemStack(Material.STRING));
+
+        gui.setItem(16, customFishingRod.getCustomFishingRod());
+        player.openInventory(gui);
+    }
+
+    public void openPanaceaRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Panacea", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.GLISTERING_MELON_SLICE));
+        gui.setItem(11, new ItemStack(Material.GOLDEN_APPLE));
+        gui.setItem(12, new ItemStack(Material.GLASS_BOTTLE));
+        gui.setItem(13, new ItemStack(Material.GOLDEN_APPLE));
+        gui.setItem(21, new ItemStack(Material.MILK_BUCKET));
+
+        gui.setItem(16, panacea.getPanacea());
+        player.openInventory(gui);
+    }
+
+    public void openVerySuspiciousStewRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Very Suspicious Stew", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.RED_MUSHROOM));
+        gui.setItem(3, new ItemStack(Material.BROWN_MUSHROOM));
+        gui.setItem(4, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(12, new ItemStack(Material.BOWL));
+
+        gui.setItem(16, verySuspiciousStew.getVerySuspiciousStew());
+        player.openInventory(gui);
+    }
+
+    public void openCustomBundleRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Bundle", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.LEATHER));
+        gui.setItem(11, new ItemStack(Material.LEATHER));
+        gui.setItem(12, new ItemStack(Material.CHEST));
+        gui.setItem(13, new ItemStack(Material.LEATHER));
+        gui.setItem(21, new ItemStack(Material.LEATHER));
+
+        gui.setItem(16, customBundle.getCustomBundle());
+        player.openInventory(gui);
+    }
+
+    public void openAgonyPotionRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Agony Potion", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(11, new ItemStack(Material.FIRE_CHARGE));
+        gui.setItem(12, new ItemStack(Material.GLASS_BOTTLE));
+        gui.setItem(13, new ItemStack(Material.FIRE_CHARGE));
+        gui.setItem(21, new ItemStack(Material.FERMENTED_SPIDER_EYE));
+
+        gui.setItem(16, agonyPotion.getAgonyPotion());
         player.openInventory(gui);
     }
 
@@ -309,7 +398,7 @@ public class RecipeBook implements Listener, CommandExecutor {
 
         gui.setItem(3, new ItemStack(Material.QUARTZ));
         gui.setItem(4, new ItemStack(Material.QUARTZ));
-        gui.setItem(11, new ItemStack(Material.DIAMOND));
+        gui.setItem(12, new ItemStack(Material.DIAMOND));
         gui.setItem(13, new ItemStack(Material.QUARTZ));
         gui.setItem(20, new ItemStack(Material.DIAMOND));
 
@@ -522,9 +611,14 @@ public class RecipeBook implements Listener, CommandExecutor {
                     case 15 -> openCowboyBootsRecipeGUI(player);
                     case 16 -> openSkeletonLeggingsRecipeGUI(player);
                     case 17 -> openAxolotlBootsRecipeGUI(player);
+                    case 18 -> openAgonyPotionRecipeGUI(player);
+                    case 19 -> openCustomBundleRecipeGUI(player);
+                    case 20 -> openVerySuspiciousStewRecipeGUI(player);
+                    case 21 -> openPanaceaRecipeGUI(player);
+                    case 22 -> openCustomFishingRodRecipeGUI(player);
                 }
             } else if (holder instanceof RecipeDisplayHolder) {
-                if (event.getSlot() == 18) {
+                if (event.getSlot() == 18) { // Back button slot
                     openMainRecipeGUI(player);
                 }
             }
