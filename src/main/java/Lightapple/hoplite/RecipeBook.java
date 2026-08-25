@@ -192,6 +192,39 @@ public class RecipeBook implements Listener, CommandExecutor {
         player.openInventory(gui);
     }
 
+    private void applyBaseRecipeGUI(Inventory gui) {
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) {
+            fillerMeta.displayName(Component.text(" "));
+            filler.setItemMeta(fillerMeta);
+        }
+        for (int i = 0; i < gui.getSize(); i++) {
+            gui.setItem(i, filler);
+        }
+
+        int[] gridSlots = {2, 3, 4, 11, 12, 13, 20, 21, 22};
+        for (int slot : gridSlots) {
+            gui.setItem(slot, null);
+        }
+
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
+        if (arrowMeta != null) {
+            arrowMeta.displayName(Component.text("Crafts into", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            arrow.setItemMeta(arrowMeta);
+        }
+        gui.setItem(14, arrow);
+
+        ItemStack back = new ItemStack(Material.BARRIER);
+        ItemMeta backMeta = back.getItemMeta();
+        if (backMeta != null) {
+            backMeta.displayName(Component.text("Back", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+            back.setItemMeta(backMeta);
+        }
+        gui.setItem(18, back);
+    }
+
     public void openCustomFishingRodRecipeGUI(Player player) {
         Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Barbed Rod", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
@@ -200,6 +233,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(12, new ItemStack(Material.STICK));
         gui.setItem(13, new ItemStack(Material.STRING));
         gui.setItem(20, new ItemStack(Material.STICK));
+        gui.setItem(21, new ItemStack(Material.FLINT)); // Row 3, Column 2
         gui.setItem(22, new ItemStack(Material.STRING));
 
         gui.setItem(16, customFishingRod.getCustomFishingRod());
@@ -210,11 +244,17 @@ public class RecipeBook implements Listener, CommandExecutor {
         Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Panacea", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
 
-        gui.setItem(3, new ItemStack(Material.GLISTERING_MELON_SLICE));
-        gui.setItem(11, new ItemStack(Material.GOLDEN_APPLE));
-        gui.setItem(12, new ItemStack(Material.GLASS_BOTTLE));
-        gui.setItem(13, new ItemStack(Material.GOLDEN_APPLE));
-        gui.setItem(21, new ItemStack(Material.MILK_BUCKET));
+        gui.setItem(2, new ItemStack(Material.WHITE_TULIP));
+        gui.setItem(3, new ItemStack(Material.EXPERIENCE_BOTTLE));
+        gui.setItem(4, new ItemStack(Material.WHITE_TULIP));
+
+        gui.setItem(11, new ItemStack(Material.OAK_LOG));
+        gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(13, new ItemStack(Material.OAK_LOG));
+
+        gui.setItem(20, new ItemStack(Material.WHITE_TULIP));
+        gui.setItem(21, new ItemStack(Material.EXPERIENCE_BOTTLE));
+        gui.setItem(22, new ItemStack(Material.WHITE_TULIP));
 
         gui.setItem(16, panacea.getPanacea());
         player.openInventory(gui);
@@ -550,34 +590,6 @@ public class RecipeBook implements Listener, CommandExecutor {
         player.openInventory(gui);
     }
 
-    private void applyBaseRecipeGUI(Inventory gui) {
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta fillerMeta = filler.getItemMeta();
-        if (fillerMeta != null) {
-            fillerMeta.displayName(Component.text(" "));
-            filler.setItemMeta(fillerMeta);
-        }
-        for (int i = 0; i < gui.getSize(); i++) {
-            gui.setItem(i, filler);
-        }
-
-        ItemStack arrow = new ItemStack(Material.ARROW);
-        ItemMeta arrowMeta = arrow.getItemMeta();
-        if (arrowMeta != null) {
-            arrowMeta.displayName(Component.text("Crafts into", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
-            arrow.setItemMeta(arrowMeta);
-        }
-        gui.setItem(14, arrow);
-
-        ItemStack back = new ItemStack(Material.BARRIER);
-        ItemMeta backMeta = back.getItemMeta();
-        if (backMeta != null) {
-            backMeta.displayName(Component.text("Back", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
-            back.setItemMeta(backMeta);
-        }
-        gui.setItem(18, back);
-    }
-
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
@@ -585,41 +597,45 @@ public class RecipeBook implements Listener, CommandExecutor {
         if (holder instanceof MainRecipeHolder || holder instanceof RecipeDisplayHolder) {
             event.setCancelled(true);
 
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-                return;
-            }
-
-            Player player = (Player) event.getWhoClicked();
-
-            if (holder instanceof MainRecipeHolder) {
-                switch (event.getSlot()) {
-                    case 0 -> openLightAppleRecipeGUI(player);
-                    case 1 -> openShortswordRecipeGUI(player);
-                    case 2 -> openTridentRecipeGUI(player);
-                    case 3 -> openTotemRecipeGUI(player);
-                    case 4 -> openLightAnvilRecipeGUI(player);
-                    case 5 -> openBundledArrowsRecipeGUI(player);
-                    case 6 -> openShortbowRecipeGUI(player);
-                    case 7 -> openLightNetheriteSwordRecipeGUI(player);
-                    case 8 -> openCrystallizationShardRecipeGUI(player);
-                    case 9 -> openGoldenHeadRecipeGUI(player);
-                    case 10 -> openSmeltersPickaxeRecipeGUI(player);
-                    case 11 -> openSuperSmeltersPickaxeRecipeGUI(player);
-                    case 12 -> openBlazingCrossbowRecipeGUI(player);
-                    case 13 -> openCactusChestplateRecipeGUI(player);
-                    case 14 -> openBanditLeggingsRecipeGUI(player);
-                    case 15 -> openCowboyBootsRecipeGUI(player);
-                    case 16 -> openSkeletonLeggingsRecipeGUI(player);
-                    case 17 -> openAxolotlBootsRecipeGUI(player);
-                    case 18 -> openAgonyPotionRecipeGUI(player);
-                    case 19 -> openCustomBundleRecipeGUI(player);
-                    case 20 -> openVerySuspiciousStewRecipeGUI(player);
-                    case 21 -> openPanaceaRecipeGUI(player);
-                    case 22 -> openCustomFishingRodRecipeGUI(player);
+            if (event.getWhoClicked() instanceof Player player) {
+                ItemStack clicked = event.getCurrentItem();
+                if (clicked == null || clicked.getType() == Material.AIR || clicked.getType() == Material.GRAY_STAINED_GLASS_PANE) {
+                    return;
                 }
-            } else if (holder instanceof RecipeDisplayHolder) {
-                if (event.getSlot() == 18) { // Back button slot
+
+                if (clicked.getType() == Material.BARRIER) {
                     openMainRecipeGUI(player);
+                    return;
+                }
+
+                int slot = event.getSlot();
+
+                if (holder instanceof MainRecipeHolder) {
+                    switch (slot) {
+                        case 0 -> openLightAppleRecipeGUI(player);
+                        case 1 -> openShortswordRecipeGUI(player);
+                        case 2 -> openTridentRecipeGUI(player);
+                        case 3 -> openTotemRecipeGUI(player);
+                        case 4 -> openLightAnvilRecipeGUI(player);
+                        case 5 -> openBundledArrowsRecipeGUI(player);
+                        case 6 -> openShortbowRecipeGUI(player);
+                        case 7 -> openLightNetheriteSwordRecipeGUI(player);
+                        case 8 -> openCrystallizationShardRecipeGUI(player);
+                        case 9 -> openGoldenHeadRecipeGUI(player);
+                        case 10 -> openSmeltersPickaxeRecipeGUI(player);
+                        case 11 -> openSuperSmeltersPickaxeRecipeGUI(player);
+                        case 12 -> openBlazingCrossbowRecipeGUI(player);
+                        case 13 -> openCactusChestplateRecipeGUI(player);
+                        case 14 -> openBanditLeggingsRecipeGUI(player);
+                        case 15 -> openCowboyBootsRecipeGUI(player);
+                        case 16 -> openSkeletonLeggingsRecipeGUI(player);
+                        case 17 -> openAxolotlBootsRecipeGUI(player);
+                        case 18 -> openAgonyPotionRecipeGUI(player);
+                        case 19 -> openCustomBundleRecipeGUI(player);
+                        case 20 -> openVerySuspiciousStewRecipeGUI(player);
+                        case 21 -> openPanaceaRecipeGUI(player);
+                        case 22 -> openCustomFishingRodRecipeGUI(player);
+                    }
                 }
             }
         }

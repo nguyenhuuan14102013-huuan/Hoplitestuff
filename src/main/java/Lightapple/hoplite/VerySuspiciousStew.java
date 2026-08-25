@@ -83,11 +83,18 @@ public class VerySuspiciousStew implements Listener {
                     .decoration(TextDecoration.ITALIC, false));
 
             meta.lore(lore);
+            meta.setCustomModelData(8); // CustomModelData 8 -> beetroot_soup model override
             meta.getPersistentDataContainer().set(stewKey, PersistentDataType.BYTE, (byte) 1);
             stew.setItemMeta(meta);
         }
 
         return stew;
+    }
+
+    public boolean isVerySuspiciousStew(ItemStack item) {
+        if (item == null || item.getType() != Material.SUSPICIOUS_STEW || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.getPersistentDataContainer().has(stewKey, PersistentDataType.BYTE);
     }
 
     private void registerRecipe() {
@@ -113,23 +120,20 @@ public class VerySuspiciousStew implements Listener {
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
-        if (item.getType() == Material.SUSPICIOUS_STEW && item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null && meta.getPersistentDataContainer().has(stewKey, PersistentDataType.BYTE)) {
-                Player player = event.getPlayer();
+        if (isVerySuspiciousStew(item)) {
+            Player player = event.getPlayer();
 
-                // Apply guaranteed Regen 3 (amplifier 2) for 10 seconds (200 ticks = 16 HP = 8 hearts)
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 2));
+            // Apply guaranteed Regen 3 (amplifier 2) for 10 seconds (200 ticks = 16 HP = 8 hearts)
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 2));
 
-                // Choose a random effect across positive (2 mins / 2400 ticks) and negative (15s / 300 ticks)
-                boolean isPositive = random.nextBoolean();
-                if (isPositive) {
-                    PotionEffectType effect = positiveEffects.get(random.nextInt(positiveEffects.size()));
-                    player.addPotionEffect(new PotionEffect(effect, 2400, 0));
-                } else {
-                    PotionEffectType effect = negativeEffects.get(random.nextInt(negativeEffects.size()));
-                    player.addPotionEffect(new PotionEffect(effect, 300, 0));
-                }
+            // Choose a random effect across positive (2 mins / 2400 ticks) and negative (15s / 300 ticks)
+            boolean isPositive = random.nextBoolean();
+            if (isPositive) {
+                PotionEffectType effect = positiveEffects.get(random.nextInt(positiveEffects.size()));
+                player.addPotionEffect(new PotionEffect(effect, 2400, 0));
+            } else {
+                PotionEffectType effect = negativeEffects.get(random.nextInt(negativeEffects.size()));
+                player.addPotionEffect(new PotionEffect(effect, 300, 0));
             }
         }
     }

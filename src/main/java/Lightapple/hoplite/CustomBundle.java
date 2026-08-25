@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -88,6 +87,12 @@ public class CustomBundle implements Listener {
         return bundle;
     }
 
+    public boolean isCustomBundle(ItemStack item) {
+        if (item == null || item.getType() != Material.BUNDLE || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.getPersistentDataContainer().has(bundleKey, PersistentDataType.STRING);
+    }
+
     private void registerRecipe() {
         NamespacedKey key = new NamespacedKey(plugin, "custom_bundle");
 
@@ -112,14 +117,14 @@ public class CustomBundle implements Listener {
     public void onRightClick(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = event.getItem();
-            if (item != null && item.getType() == Material.BUNDLE && item.hasItemMeta()) {
+            if (isCustomBundle(item)) {
+                event.setCancelled(true);
+
+                Player player = event.getPlayer();
+                Inventory gui = Bukkit.createInventory(new BundleHolder(item), 27, Component.text("Bundle Storage", NamedTextColor.DARK_GRAY));
+
                 ItemMeta meta = item.getItemMeta();
-                if (meta != null && meta.getPersistentDataContainer().has(bundleKey, PersistentDataType.STRING)) {
-                    event.setCancelled(true);
-
-                    Player player = event.getPlayer();
-                    Inventory gui = Bukkit.createInventory(new BundleHolder(item), 27, Component.text("Bundle Storage", NamedTextColor.DARK_GRAY));
-
+                if (meta != null) {
                     String serializedData = meta.getPersistentDataContainer().get(dataKey, PersistentDataType.STRING);
                     if (serializedData != null && !serializedData.isEmpty()) {
                         ItemStack[] contents = deserializeItems(serializedData);
@@ -127,9 +132,9 @@ public class CustomBundle implements Listener {
                             gui.setContents(contents);
                         }
                     }
-
-                    player.openInventory(gui);
                 }
+
+                player.openInventory(gui);
             }
         }
     }
