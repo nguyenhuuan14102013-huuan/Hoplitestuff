@@ -28,6 +28,11 @@ public final class Hoplite extends JavaPlugin {
     private CustomPlayerHead customPlayerHead;
     private Panacea panacea;
     private CustomFishingRod customFishingRod;
+    private PortableVillager portableVillager;
+    private ExplosivePickaxe explosivePickaxe;
+    private LumberjacksAxe lumberjacksAxe;
+    private TrackerPack trackerPack;
+    private NetherReactorCore netherReactorCore;
     private RecipeBook recipeBook;
 
     @Override
@@ -56,6 +61,11 @@ public final class Hoplite extends JavaPlugin {
         this.customPlayerHead = new CustomPlayerHead(this);
         this.panacea = new Panacea(this);
         this.customFishingRod = new CustomFishingRod(this);
+        this.portableVillager = new PortableVillager(this);
+        this.explosivePickaxe = new ExplosivePickaxe(this);
+        this.lumberjacksAxe = new LumberjacksAxe(this);
+        this.trackerPack = new TrackerPack(this);
+        this.netherReactorCore = new NetherReactorCore(this);
 
         this.recipeBook = new RecipeBook(
                 this,
@@ -81,16 +91,26 @@ public final class Hoplite extends JavaPlugin {
                 customBundle,
                 verySuspiciousStew,
                 panacea,
-                customFishingRod
+                customFishingRod,
+                portableVillager,
+                explosivePickaxe,
+                lumberjacksAxe,
+                trackerPack,
+                netherReactorCore
         );
 
         // Register listeners
         getServer().getPluginManager().registerEvents(recipeBook, this);
+        getServer().getPluginManager().registerEvents(explosivePickaxe, this);
+        getServer().getPluginManager().registerEvents(lumberjacksAxe, this);
+        getServer().getPluginManager().registerEvents(trackerPack, this);
+        getServer().getPluginManager().registerEvents(netherReactorCore, this);
         getServer().getPluginManager().registerEvents(customBundle, this);
         getServer().getPluginManager().registerEvents(verySuspiciousStew, this);
         getServer().getPluginManager().registerEvents(customPlayerHead, this);
         getServer().getPluginManager().registerEvents(panacea, this);
         getServer().getPluginManager().registerEvents(customFishingRod, this);
+        getServer().getPluginManager().registerEvents(portableVillager, this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new CowboyBootsListener(this), this);
@@ -136,4 +156,9 @@ public final class Hoplite extends JavaPlugin {
     public CustomPlayerHead getCustomPlayerHead() { return customPlayerHead; }
     public Panacea getPanacea() { return panacea; }
     public CustomFishingRod getCustomFishingRod() { return customFishingRod; }
+    public PortableVillager getPortableVillager() { return portableVillager; }
+    public ExplosivePickaxe getExplosivePickaxe() { return explosivePickaxe; }
+    public LumberjacksAxe getLumberjacksAxe() { return lumberjacksAxe; }
+    public TrackerPack getTrackerPack() { return trackerPack; }
+    public NetherReactorCore getNetherReactorCore() { return netherReactorCore; }
 }

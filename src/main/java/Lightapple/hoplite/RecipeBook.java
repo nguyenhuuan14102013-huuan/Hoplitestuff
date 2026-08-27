@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -47,6 +48,11 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final VerySuspiciousStew verySuspiciousStew;
     private final Panacea panacea;
     private final CustomFishingRod customFishingRod;
+    private final PortableVillager portableVillager;
+    private final ExplosivePickaxe explosivePickaxe;
+    private final LumberjacksAxe lumberjacksAxe;
+    private final TrackerPack trackerPack;
+    private final NetherReactorCore netherReactorCore;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -80,7 +86,12 @@ public class RecipeBook implements Listener, CommandExecutor {
             CustomBundle customBundle,
             VerySuspiciousStew verySuspiciousStew,
             Panacea panacea,
-            CustomFishingRod customFishingRod
+            CustomFishingRod customFishingRod,
+            PortableVillager portableVillager,
+            ExplosivePickaxe explosivePickaxe,
+            LumberjacksAxe lumberjacksAxe,
+            TrackerPack trackerPack,
+            NetherReactorCore netherReactorCore
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -106,6 +117,11 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.verySuspiciousStew = verySuspiciousStew;
         this.panacea = panacea;
         this.customFishingRod = customFishingRod;
+        this.portableVillager = portableVillager;
+        this.explosivePickaxe = explosivePickaxe;
+        this.lumberjacksAxe = lumberjacksAxe;
+        this.trackerPack = trackerPack;
+        this.netherReactorCore = netherReactorCore;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -125,18 +141,30 @@ public class RecipeBook implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.isOp()) {
-            sender.sendMessage(Component.text("You must be an operator to use this command!", NamedTextColor.RED));
+        if (label.equalsIgnoreCase("giverecipebook")) {
+            if (!sender.isOp()) {
+                sender.sendMessage(Component.text("You must be an operator to use this command!", NamedTextColor.RED));
+                return true;
+            }
+            ItemStack book = getRecipeBookItem();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getInventory().addItem(book.clone());
+                player.sendMessage(Component.text("You received a Recipe Book!", NamedTextColor.GREEN));
+            }
+            sender.sendMessage(Component.text("Given Recipe Book to all online players.", NamedTextColor.GREEN));
             return true;
         }
 
-        ItemStack book = getRecipeBookItem();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.getInventory().addItem(book.clone());
-            player.sendMessage(Component.text("You received a Recipe Book!", NamedTextColor.GREEN));
+        if (label.equalsIgnoreCase("recipebook")) {
+            if (sender instanceof Player player) {
+                openMainRecipeGUI(player);
+            } else {
+                sender.sendMessage(Component.text("Only players can use /recipebook directly!", NamedTextColor.RED));
+            }
+            return true;
         }
-        sender.sendMessage(Component.text("Given Recipe Book to all online players.", NamedTextColor.GREEN));
-        return true;
+
+        return false;
     }
 
     @EventHandler
@@ -153,7 +181,7 @@ public class RecipeBook implements Listener, CommandExecutor {
     }
 
     public void openMainRecipeGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(new MainRecipeHolder(), 27, Component.text("Recipe Book", NamedTextColor.DARK_GRAY));
+        Inventory gui = Bukkit.createInventory(new MainRecipeHolder(), 36, Component.text("Recipe Book", NamedTextColor.DARK_GRAY));
 
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta fillerMeta = filler.getItemMeta();
@@ -188,6 +216,11 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(20, verySuspiciousStew.getVerySuspiciousStew());
         gui.setItem(21, panacea.getPanacea());
         gui.setItem(22, customFishingRod.getCustomFishingRod());
+        gui.setItem(23, portableVillager.createPortableVillager(Villager.Profession.NONE));
+        gui.setItem(24, explosivePickaxe.getExplosivePickaxe());
+        gui.setItem(25, lumberjacksAxe.getLumberjacksAxe());
+        gui.setItem(26, trackerPack.getTrackerPack());
+        gui.setItem(27, netherReactorCore.getNetherReactorCore());
 
         player.openInventory(gui);
     }
@@ -225,6 +258,89 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(18, back);
     }
 
+    public void openNetherReactorCoreRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Nether Reactor Core", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.BLUE_STAINED_GLASS));
+        gui.setItem(3, new ItemStack(Material.COAL_BLOCK));
+        gui.setItem(4, new ItemStack(Material.BLUE_STAINED_GLASS));
+        gui.setItem(11, new ItemStack(Material.BLUE_STAINED_GLASS));
+        gui.setItem(12, new ItemStack(Material.GUNPOWDER));
+        gui.setItem(13, new ItemStack(Material.BLUE_STAINED_GLASS));
+        gui.setItem(20, new ItemStack(Material.BLUE_STAINED_GLASS));
+        gui.setItem(21, new ItemStack(Material.COAL_BLOCK));
+        gui.setItem(22, new ItemStack(Material.BLUE_STAINED_GLASS));
+
+        gui.setItem(16, netherReactorCore.getNetherReactorCore());
+        player.openInventory(gui);
+    }
+
+    public void openTrackerPackRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Tracker Pack", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(3, new ItemStack(Material.BONE));
+        gui.setItem(11, new ItemStack(Material.BONE));
+        gui.setItem(12, new ItemStack(Material.COMPASS));
+        gui.setItem(13, new ItemStack(Material.BONE));
+        gui.setItem(21, new ItemStack(Material.BONE));
+
+        gui.setItem(16, trackerPack.getTrackerPack());
+        player.openInventory(gui);
+    }
+
+    public void openLumberjacksAxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Lumberjack's Axe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(3, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(4, new ItemStack(Material.FLINT));
+        gui.setItem(11, new ItemStack(Material.IRON_INGOT));
+        gui.setItem(12, new ItemStack(Material.STICK));
+        gui.setItem(21, new ItemStack(Material.STICK));
+
+        gui.setItem(16, lumberjacksAxe.getLumberjacksAxe());
+        player.openInventory(gui);
+    }
+
+    public void openExplosivePickaxeRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Explosive Pickaxe", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.REDSTONE_BLOCK));
+        gui.setItem(3, new ItemStack(Material.TNT));
+        gui.setItem(4, new ItemStack(Material.REDSTONE_BLOCK));
+        gui.setItem(11, new ItemStack(Material.REDSTONE_BLOCK));
+        gui.setItem(12, new ItemStack(Material.DIAMOND_PICKAXE));
+        gui.setItem(13, new ItemStack(Material.REDSTONE_BLOCK));
+        gui.setItem(20, new ItemStack(Material.REDSTONE_BLOCK));
+        gui.setItem(21, new ItemStack(Material.AMETHYST_SHARD));
+        gui.setItem(22, new ItemStack(Material.REDSTONE_BLOCK));
+
+        gui.setItem(16, explosivePickaxe.getExplosivePickaxe());
+        player.openInventory(gui);
+    }
+
+    public void openPortableVillagerRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Portable Villager", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.WHEAT));
+        gui.setItem(3, new ItemStack(Material.EMERALD));
+        gui.setItem(4, new ItemStack(Material.WHEAT));
+        gui.setItem(11, new ItemStack(Material.WHEAT));
+        gui.setItem(12, new ItemStack(Material.LECTERN));
+        gui.setItem(13, new ItemStack(Material.WHEAT));
+        gui.setItem(20, new ItemStack(Material.WHEAT));
+        gui.setItem(21, new ItemStack(Material.COMPOSTER));
+        gui.setItem(22, new ItemStack(Material.WHEAT));
+
+        gui.setItem(16, portableVillager.createPortableVillager(Villager.Profession.NONE));
+        player.openInventory(gui);
+    }
+
     public void openCustomFishingRodRecipeGUI(Player player) {
         Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Barbed Rod", NamedTextColor.DARK_GRAY));
         applyBaseRecipeGUI(gui);
@@ -233,7 +349,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(12, new ItemStack(Material.STICK));
         gui.setItem(13, new ItemStack(Material.STRING));
         gui.setItem(20, new ItemStack(Material.STICK));
-        gui.setItem(21, new ItemStack(Material.FLINT)); // Row 3, Column 2
+        gui.setItem(21, new ItemStack(Material.FLINT));
         gui.setItem(22, new ItemStack(Material.STRING));
 
         gui.setItem(16, customFishingRod.getCustomFishingRod());
@@ -245,15 +361,13 @@ public class RecipeBook implements Listener, CommandExecutor {
         applyBaseRecipeGUI(gui);
 
         gui.setItem(2, new ItemStack(Material.WHITE_TULIP));
-        gui.setItem(3, new ItemStack(Material.EXPERIENCE_BOTTLE));
+        gui.setItem(3, new ItemStack(Material.HONEY_BOTTLE));
         gui.setItem(4, new ItemStack(Material.WHITE_TULIP));
-
         gui.setItem(11, new ItemStack(Material.OAK_LOG));
         gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
         gui.setItem(13, new ItemStack(Material.OAK_LOG));
-
         gui.setItem(20, new ItemStack(Material.WHITE_TULIP));
-        gui.setItem(21, new ItemStack(Material.EXPERIENCE_BOTTLE));
+        gui.setItem(21, new ItemStack(Material.HONEY_BOTTLE));
         gui.setItem(22, new ItemStack(Material.WHITE_TULIP));
 
         gui.setItem(16, panacea.getPanacea());
@@ -635,6 +749,11 @@ public class RecipeBook implements Listener, CommandExecutor {
                         case 20 -> openVerySuspiciousStewRecipeGUI(player);
                         case 21 -> openPanaceaRecipeGUI(player);
                         case 22 -> openCustomFishingRodRecipeGUI(player);
+                        case 23 -> openPortableVillagerRecipeGUI(player);
+                        case 24 -> openExplosivePickaxeRecipeGUI(player);
+                        case 25 -> openLumberjacksAxeRecipeGUI(player);
+                        case 26 -> openTrackerPackRecipeGUI(player);
+                        case 27 -> openNetherReactorCoreRecipeGUI(player);
                     }
                 }
             }

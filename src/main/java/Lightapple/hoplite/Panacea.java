@@ -7,13 +7,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Beehive;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,152 +32,185 @@ import java.util.List;
 public class Panacea implements Listener {
 
     private final Hoplite plugin;
-    private final NamespacedKey panaceaKey;
-    private final NamespacedKey usesKey;
+    private final NamespacedKey panaceaIdKey;
+    private final NamespacedKey sipsKey;
+    private final NamespacedKey filledKey;
 
     public Panacea(Hoplite plugin) {
         this.plugin = plugin;
-        this.panaceaKey = new NamespacedKey(plugin, "panacea");
-        this.usesKey = new NamespacedKey(plugin, "panacea_uses");
+        this.panaceaIdKey = new NamespacedKey(plugin, "is_panacea");
+        this.sipsKey = new NamespacedKey(plugin, "panacea_sips");
+        this.filledKey = new NamespacedKey(plugin, "panacea_filled");
+
         registerRecipe();
     }
 
     public ItemStack getPanacea() {
-        ItemStack potion = new ItemStack(Material.POTION);
-        ItemMeta meta = potion.getItemMeta();
+        return createPanacea();
+    }
+
+    public ItemStack getPanaceaItem() {
+        return createPanacea();
+    }
+
+    private void registerRecipe() {
+        NamespacedKey recipeKey = new NamespacedKey(plugin, "panacea_recipe");
+
+        if (Bukkit.getRecipe(recipeKey) != null) {
+            Bukkit.removeRecipe(recipeKey);
+        }
+
+        ShapedRecipe recipe = new ShapedRecipe(recipeKey, createPanacea());
+        recipe.shape(
+                "FHF",
+                "LCL",
+                "FHF"
+        );
+
+        recipe.setIngredient('F', Material.WHITE_TULIP);
+        recipe.setIngredient('H', Material.HONEY_BOTTLE);
+        recipe.setIngredient('L', Material.OAK_LOG);
+        recipe.setIngredient('C', Material.PLAYER_HEAD);
+
+        Bukkit.addRecipe(recipe);
+    }
+
+    public ItemStack createPanacea() {
+        ItemStack item = new ItemStack(Material.POTION);
+        ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
             meta.displayName(Component.text("Panacea", NamedTextColor.LIGHT_PURPLE)
                     .decoration(TextDecoration.ITALIC, false));
 
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("A mythical regeneration potion that can", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("be consumed up to 5 times.", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.empty());
-            lore.add(Component.text("CONSUME to regenerate 4 hearts.", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.empty());
-            lore.add(Component.text("RIGHT CLICK on a bee nest with honey to", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("refill.", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
+            PersistentDataContainer pdc = meta.getPersistentDataContainer();
+            pdc.set(panaceaIdKey, PersistentDataType.BOOLEAN, true);
+            pdc.set(sipsKey, PersistentDataType.INTEGER, 5);
+            pdc.set(filledKey, PersistentDataType.BOOLEAN, true);
 
-            meta.lore(lore);
-
-            // Start at threshold 1 (full state)[cite: 2, 7]
-            meta.setCustomModelData(1);
-            meta.getPersistentDataContainer().set(usesKey, PersistentDataType.INTEGER, 1);
-
-            potion.setItemMeta(meta);
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+            item.setItemMeta(meta);
         }
 
-        return potion;
-    }
-
-    public ItemStack getEmptyPanaceaBottle() {
-        ItemStack bottle = new ItemStack(Material.POTION);
-        ItemMeta meta = bottle.getItemMeta();
-
-        if (meta != null) {
-            meta.displayName(Component.text("Empty Panacea Bottle", NamedTextColor.LIGHT_PURPLE)
-                    .decoration(TextDecoration.ITALIC, false));
-
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("An empty bottle that can be refilled.", NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            meta.lore(lore);
-
-            // Set to a custom model data state or texture for fully empty if applicable,
-            // or leave it default if empty texture is handled elsewhere
-            meta.getPersistentDataContainer().set(usesKey, PersistentDataType.INTEGER, 6);
-
-            bottle.setItemMeta(meta);
-        }
-
-        return bottle;
-    }
-
-    private void registerRecipe() {
-        if (Bukkit.getRecipe(panaceaKey) != null) {
-            Bukkit.removeRecipe(panaceaKey);
-        }
-
-        ShapedRecipe recipe = new ShapedRecipe(panaceaKey, getPanacea());
-        recipe.shape(
-                "WGW",
-                "LHL",
-                "WGW"
-        );
-
-        recipe.setIngredient('W', Material.WHITE_TULIP);
-        recipe.setIngredient('G', Material.EXPERIENCE_BOTTLE);
-        recipe.setIngredient('L', Material.OAK_LOG);
-        recipe.setIngredient('H', Material.PLAYER_HEAD);
-
-        Bukkit.addRecipe(recipe);
-    }
-
-    public boolean isPanacea(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return false;
-        ItemMeta meta = item.getItemMeta();
-        return meta != null && meta.hasDisplayName() && meta.displayName().equals(Component.text("Panacea", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
+        updateItemState(item, 5, true);
+        return item;
     }
 
     @EventHandler
-    public void onPlayerConsume(PlayerItemConsumeEvent event) {
+    public void onConsume(PlayerItemConsumeEvent event) {
         ItemStack item = event.getItem();
-        if (isPanacea(item)) {
-            Player player = event.getPlayer();
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
 
-            // Apply regeneration and sound effect
-            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60, 1));
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0f, 1.0f);
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        if (!pdc.has(panaceaIdKey, PersistentDataType.BOOLEAN)) return;
 
-            // Cancel standard vanilla item cleanup so we can manage custom threshold states
+        Player player = event.getPlayer();
+        boolean isFilled = pdc.getOrDefault(filledKey, PersistentDataType.BOOLEAN, false);
+
+        if (!isFilled) {
             event.setCancelled(true);
+            player.sendMessage(Component.text("This Panacea bottle is empty! Refill it at a bee nest first.", NamedTextColor.RED));
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
 
-            ItemMeta meta = item.getItemMeta();
-            if (meta == null) return;
+        int currentSips = pdc.getOrDefault(sipsKey, PersistentDataType.INTEGER, 5);
+        int newSips = currentSips - 1;
 
-            int currentStep = meta.getPersistentDataContainer().getOrDefault(usesKey, PersistentDataType.INTEGER, 1);
-            currentStep++; // Increment threshold (1 -> 2 -> 3 -> 4 -> 5)[cite: 2, 7]
+        // Apply Regeneration I for 20 seconds (400 ticks)
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 400, 0, false, true, true));
 
-            ItemStack resultItem;
+        if (newSips <= 0) {
+            event.setReplacement(new ItemStack(Material.AIR));
+            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+            return;
+        }
 
-            if (currentStep <= 5) {
-                // Clone the item and shift the model threshold up
-                resultItem = item.clone();
-                ItemMeta resultMeta = resultItem.getItemMeta();
+        ItemStack updatedItem = item.clone();
+        ItemMeta updatedMeta = updatedItem.getItemMeta();
+        if (updatedMeta != null) {
+            PersistentDataContainer updatedPdc = updatedMeta.getPersistentDataContainer();
+            updatedPdc.set(sipsKey, PersistentDataType.INTEGER, newSips);
+            updatedPdc.set(filledKey, PersistentDataType.BOOLEAN, false);
+            updatedItem.setItemMeta(updatedMeta);
+        }
 
-                resultMeta.setCustomModelData(currentStep);
-                resultMeta.getPersistentDataContainer().set(usesKey, PersistentDataType.INTEGER, currentStep);
-                resultItem.setItemMeta(resultMeta);
-            } else {
-                // Reached the 5th sip, turn into the empty bottle item
-                resultItem = getEmptyPanaceaBottle();
-            }
+        updateItemState(updatedItem, newSips, false);
+        event.setReplacement(updatedItem);
+    }
 
-            // Handle stack deduction properly for main/off hand
-            ItemStack mainHand = player.getInventory().getItemInMainHand();
-            ItemStack offHand = player.getInventory().getItemInOffHand();
+    @EventHandler
+    public void onRefill(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
 
-            if (isPanacea(mainHand)) {
-                if (mainHand.getAmount() > 1) {
-                    mainHand.setAmount(mainHand.getAmount() - 1);
-                    player.getInventory().addItem(resultItem);
-                } else {
-                    player.getInventory().setItemInMainHand(resultItem);
-                }
-            } else if (isPanacea(offHand)) {
-                if (offHand.getAmount() > 1) {
-                    offHand.setAmount(offHand.getAmount() - 1);
-                    player.getInventory().addItem(resultItem);
-                } else {
-                    player.getInventory().setItemInOffHand(resultItem);
-                }
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (block.getType() != Material.BEE_NEST && block.getType() != Material.BEEHIVE) return;
+
+        ItemStack item = event.getItem();
+        if (item == null || item.getType() != Material.POTION) return;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        if (!pdc.has(panaceaIdKey, PersistentDataType.BOOLEAN)) return;
+
+        boolean isFilled = pdc.getOrDefault(filledKey, PersistentDataType.BOOLEAN, false);
+        if (isFilled) return;
+
+        if (block.getBlockData() instanceof Beehive beehive) {
+            if (beehive.getHoneyLevel() >= beehive.getMaximumHoneyLevel()) {
+                event.setCancelled(true);
+
+                beehive.setHoneyLevel(beehive.getHoneyLevel() - 1);
+                block.setBlockData(beehive);
+
+                int currentSips = pdc.getOrDefault(sipsKey, PersistentDataType.INTEGER, 1);
+
+                pdc.set(filledKey, PersistentDataType.BOOLEAN, true);
+                item.setItemMeta(meta);
+
+                updateItemState(item, currentSips, true);
+
+                Player player = event.getPlayer();
+                player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL, 1.0f, 1.0f);
             }
         }
+    }
+
+    private void updateItemState(ItemStack item, int sipsRemaining, boolean isFilled) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+
+        if (isFilled) {
+            meta.setCustomModelData(1);
+        } else {
+            meta.setCustomModelData(2);
+        }
+
+        if (meta instanceof Damageable damageable) {
+            damageable.setMaxDamage(5);
+            damageable.setDamage(5 - sipsRemaining);
+        }
+
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("A mythical regeneration potion that can", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("be consumed up to 5 times.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.empty());
+        lore.add(Component.text("CONSUME to regenerate 4 hearts.", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.empty());
+        lore.add(Component.text("RIGHT CLICK on a bee nest with honey to", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("refill.", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+
+        if (!isFilled) {
+            lore.add(Component.empty());
+            lore.add(Component.text("[NEEDS REFILL]", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        }
+
+        meta.lore(lore);
+        item.setItemMeta(meta);
     }
 }
