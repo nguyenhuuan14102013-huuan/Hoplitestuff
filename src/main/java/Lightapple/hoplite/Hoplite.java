@@ -33,6 +33,7 @@ public final class Hoplite extends JavaPlugin {
     private LumberjacksAxe lumberjacksAxe;
     private TrackerPack trackerPack;
     private NetherReactorCore netherReactorCore;
+    private AresBlessing aresBlessing;
     private RecipeBook recipeBook;
 
     @Override
@@ -66,6 +67,7 @@ public final class Hoplite extends JavaPlugin {
         this.lumberjacksAxe = new LumberjacksAxe(this);
         this.trackerPack = new TrackerPack(this);
         this.netherReactorCore = new NetherReactorCore(this);
+        this.aresBlessing = new AresBlessing(this);
 
         this.recipeBook = new RecipeBook(
                 this,
@@ -96,7 +98,8 @@ public final class Hoplite extends JavaPlugin {
                 explosivePickaxe,
                 lumberjacksAxe,
                 trackerPack,
-                netherReactorCore
+                netherReactorCore,
+                aresBlessing
         );
 
         // Register listeners
@@ -111,6 +114,7 @@ public final class Hoplite extends JavaPlugin {
         getServer().getPluginManager().registerEvents(panacea, this);
         getServer().getPluginManager().registerEvents(customFishingRod, this);
         getServer().getPluginManager().registerEvents(portableVillager, this);
+        getServer().getPluginManager().registerEvents(aresBlessing, this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new CowboyBootsListener(this), this);
@@ -161,4 +165,5 @@ public final class Hoplite extends JavaPlugin {
     public LumberjacksAxe getLumberjacksAxe() { return lumberjacksAxe; }
     public TrackerPack getTrackerPack() { return trackerPack; }
     public NetherReactorCore getNetherReactorCore() { return netherReactorCore; }
+    public AresBlessing getAresBlessing() { return aresBlessing; }
 }

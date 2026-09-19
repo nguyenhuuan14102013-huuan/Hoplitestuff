@@ -53,6 +53,7 @@ public class RecipeBook implements Listener, CommandExecutor {
     private final LumberjacksAxe lumberjacksAxe;
     private final TrackerPack trackerPack;
     private final NetherReactorCore netherReactorCore;
+    private final AresBlessing aresBlessing;
 
     public static class MainRecipeHolder implements InventoryHolder {
         @Override public Inventory getInventory() { return null; }
@@ -91,7 +92,8 @@ public class RecipeBook implements Listener, CommandExecutor {
             ExplosivePickaxe explosivePickaxe,
             LumberjacksAxe lumberjacksAxe,
             TrackerPack trackerPack,
-            NetherReactorCore netherReactorCore
+            NetherReactorCore netherReactorCore,
+            AresBlessing aresBlessing
     ) {
         this.plugin = plugin;
         this.lightApple = lightApple;
@@ -122,6 +124,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         this.lumberjacksAxe = lumberjacksAxe;
         this.trackerPack = trackerPack;
         this.netherReactorCore = netherReactorCore;
+        this.aresBlessing = aresBlessing;
     }
 
     public static ItemStack getRecipeBookItem() {
@@ -221,6 +224,7 @@ public class RecipeBook implements Listener, CommandExecutor {
         gui.setItem(25, lumberjacksAxe.getLumberjacksAxe());
         gui.setItem(26, trackerPack.getTrackerPack());
         gui.setItem(27, netherReactorCore.getNetherReactorCore());
+        gui.setItem(28, aresBlessing.getAresBlessing());
 
         player.openInventory(gui);
     }
@@ -256,6 +260,24 @@ public class RecipeBook implements Listener, CommandExecutor {
             back.setItemMeta(backMeta);
         }
         gui.setItem(18, back);
+    }
+
+    public void openAresBlessingRecipeGUI(Player player) {
+        Inventory gui = Bukkit.createInventory(new RecipeDisplayHolder(), 27, Component.text("Recipe: Ares Blessing", NamedTextColor.DARK_GRAY));
+        applyBaseRecipeGUI(gui);
+
+        gui.setItem(2, new ItemStack(Material.REDSTONE));
+        gui.setItem(3, new ItemStack(Material.REDSTONE));
+        gui.setItem(4, new ItemStack(Material.REDSTONE));
+        gui.setItem(11, new ItemStack(Material.REDSTONE));
+        gui.setItem(12, new ItemStack(Material.PLAYER_HEAD));
+        gui.setItem(13, new ItemStack(Material.REDSTONE));
+        gui.setItem(20, new ItemStack(Material.REDSTONE));
+        gui.setItem(21, new ItemStack(Material.REDSTONE));
+        gui.setItem(22, new ItemStack(Material.REDSTONE));
+
+        gui.setItem(16, aresBlessing.getAresBlessing());
+        player.openInventory(gui);
     }
 
     public void openNetherReactorCoreRecipeGUI(Player player) {
@@ -717,7 +739,8 @@ public class RecipeBook implements Listener, CommandExecutor {
                     return;
                 }
 
-                if (clicked.getType() == Material.BARRIER) {
+                // Only treat BARRIER as a Back button when inside a specific recipe view
+                if (holder instanceof RecipeDisplayHolder && clicked.getType() == Material.BARRIER) {
                     openMainRecipeGUI(player);
                     return;
                 }
@@ -754,6 +777,7 @@ public class RecipeBook implements Listener, CommandExecutor {
                         case 25 -> openLumberjacksAxeRecipeGUI(player);
                         case 26 -> openTrackerPackRecipeGUI(player);
                         case 27 -> openNetherReactorCoreRecipeGUI(player);
+                        case 28 -> openAresBlessingRecipeGUI(player);
                     }
                 }
             }

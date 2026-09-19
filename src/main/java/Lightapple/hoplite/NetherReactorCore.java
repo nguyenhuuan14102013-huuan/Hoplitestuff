@@ -12,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,9 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,21 +98,36 @@ public class NetherReactorCore implements Listener {
 
         if (item.getType() == Material.BARRIER && item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
             if (item.getItemMeta().getCustomModelData() == 1) {
-                Block placedBlock = event.getBlockPlaced();
-                Location center = placedBlock.getLocation();
-
-                // Terraforms ground blocks into netherrack and ground ores into nether gold
-                terraformArea(center);
-
-                // Spawns Nether Merchant villager with custom trades
-                spawnNetherMerchant(center.clone().add(0.5, 1.0, 0.5));
-
-                // Spawns 5 to 7 random nether mobs
-                spawnNetherMobs(center.clone().add(0, 1, 0));
-
-                // Visual & Audio effects
+                Block block = event.getBlockPlaced();
+                Location center = block.getLocation();
                 World world = center.getWorld();
+
                 if (world != null) {
+                    // 1. Spawn ItemDisplay centered in the block to render the BARRIER custom model
+                    Location displayLoc = center.clone().add(0.5, 0.5, 0.5);
+                    ItemDisplay display = (ItemDisplay) world.spawnEntity(displayLoc, EntityType.ITEM_DISPLAY);
+
+                    // Display the Nether Reactor Core item stack
+                    display.setItemStack(getNetherReactorCore());
+
+                    // Scale display to match full block dimensions
+                    display.setTransformation(new Transformation(
+                            new Vector3f(0, 0, 0),
+                            new AxisAngle4f(0, 0, 0, 1),
+                            new Vector3f(1.001f, 1.001f, 1.001f),
+                            new AxisAngle4f(0, 0, 0, 1)
+                    ));
+
+                    // 2. Terraforms ground blocks 1 block under placement center
+                    terraformArea(center);
+
+                    // 3. Spawns immobile Nether Merchant villager on top of the reactor core
+                    spawnNetherMerchant(center.clone().add(0.5, 1.0, 0.5));
+
+                    // 4. Spawns random nether mobs
+                    spawnNetherMobs(center.clone().add(0, 1, 0));
+
+                    // 5. Visual & Audio effects
                     world.playSound(center, Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.8f);
                     world.spawnParticle(Particle.FLAME, center.clone().add(0.5, 1.0, 0.5), 100, 2.0, 2.0, 2.0, 0.1);
                     world.spawnParticle(Particle.LARGE_SMOKE, center.clone().add(0.5, 1.0, 0.5), 50, 2.0, 2.0, 2.0, 0.05);
@@ -127,7 +146,7 @@ public class NetherReactorCore implements Listener {
         for (int x = -radiusX; x <= radiusX; x++) {
             for (int z = -radiusZ; z <= radiusZ; z++) {
 
-                // 2D elliptical distance calculation along ground level (Y = 0 offset)
+                // 2D elliptical distance calculation along ground level
                 double normX = (double) x / radiusX;
                 double normZ = (double) z / radiusZ;
 
@@ -137,7 +156,8 @@ public class NetherReactorCore implements Listener {
                 double noiseOffset = (random.nextDouble() * 0.4) - 0.2; // -0.2 to +0.2 offset
 
                 if (distanceSquared <= (1.0 + noiseOffset)) {
-                    Block block = world.getBlockAt(center.getBlockX() + x, center.getBlockY(), center.getBlockZ() + z);
+                    // Targets 1 block under where placed
+                    Block block = world.getBlockAt(center.getBlockX() + x, center.getBlockY() - 1, center.getBlockZ() + z);
                     Material type = block.getType();
 
                     if (isOre(type)) {
@@ -177,6 +197,9 @@ public class NetherReactorCore implements Listener {
         merchant.setCustomNameVisible(true);
         merchant.setProfession(Villager.Profession.NITWIT);
         merchant.setVillagerType(Villager.Type.TAIGA);
+
+        // Disables AI so the villager cannot move around
+        merchant.setAI(false);
 
         List<MerchantRecipe> trades = new ArrayList<>();
 

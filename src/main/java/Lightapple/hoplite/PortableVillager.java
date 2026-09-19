@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -93,7 +94,7 @@ public class PortableVillager implements Listener {
 
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(idKey, PersistentDataType.BOOLEAN, true);
-            pdc.set(professionKey, PersistentDataType.STRING, profession.name());
+            pdc.set(professionKey, PersistentDataType.STRING, profession.getKey().getKey());
 
             updateItemLore(meta, profession);
             item.setItemMeta(meta);
@@ -118,9 +119,9 @@ public class PortableVillager implements Listener {
     }
 
     private String formatProfessionName(Villager.Profession profession) {
-        String name = profession.name();
-        if (name.equals("NONE")) return "Unemployed";
-        return name.charAt(0) + name.substring(1).toLowerCase();
+        String key = profession.getKey().getKey();
+        if (key.equalsIgnoreCase("none")) return "Unemployed";
+        return key.substring(0, 1).toUpperCase() + key.substring(1).toLowerCase();
     }
 
     @EventHandler
@@ -141,13 +142,13 @@ public class PortableVillager implements Listener {
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
             event.setCancelled(true);
 
-            String currentProfName = pdc.getOrDefault(professionKey, PersistentDataType.STRING, "NONE");
-            Villager.Profession currentProf = Villager.Profession.valueOf(currentProfName);
+            String currentProfKey = pdc.getOrDefault(professionKey, PersistentDataType.STRING, "none");
+            Villager.Profession currentProf = getProfessionFromKey(currentProfKey);
 
             int nextIndex = (getProfessionIndex(currentProf) + 1) % PROFESSIONS.length;
             Villager.Profession nextProf = PROFESSIONS[nextIndex];
 
-            pdc.set(professionKey, PersistentDataType.STRING, nextProf.name());
+            pdc.set(professionKey, PersistentDataType.STRING, nextProf.getKey().getKey());
             updateItemLore(meta, nextProf);
             item.setItemMeta(meta);
 
@@ -162,8 +163,8 @@ public class PortableVillager implements Listener {
             Block clickedBlock = event.getClickedBlock();
             if (clickedBlock == null) return;
 
-            String profName = pdc.getOrDefault(professionKey, PersistentDataType.STRING, "NONE");
-            Villager.Profession profession = Villager.Profession.valueOf(profName);
+            String profKey = pdc.getOrDefault(professionKey, PersistentDataType.STRING, "none");
+            Villager.Profession profession = getProfessionFromKey(profKey);
 
             var spawnLocation = clickedBlock.getRelative(event.getBlockFace()).getLocation().add(0.5, 0, 0.5);
 
@@ -171,16 +172,33 @@ public class PortableVillager implements Listener {
             villager.setProfession(profession);
             villager.setAdult();
 
+            // Lock profession so it doesn't revert to Unemployed
+            if (profession != Villager.Profession.NONE) {
+                villager.setVillagerLevel(1);
+                villager.setVillagerExperience(1);
+            }
+
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
 
-            // Consume the item
-            item.setAmount(item.getAmount() - 1);
+            // Consume item if not in creative
+            if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+                item.setAmount(item.getAmount() - 1);
+            }
         }
+    }
+
+    private Villager.Profession getProfessionFromKey(String keyStr) {
+        if (keyStr == null || keyStr.isEmpty()) return Villager.Profession.NONE;
+        NamespacedKey namespacedKey = NamespacedKey.fromString(keyStr.contains(":") ? keyStr : "minecraft:" + keyStr.toLowerCase());
+        if (namespacedKey == null) return Villager.Profession.NONE;
+
+        Villager.Profession prof = Registry.VILLAGER_PROFESSION.get(namespacedKey);
+        return prof != null ? prof : Villager.Profession.NONE;
     }
 
     private int getProfessionIndex(Villager.Profession profession) {
         for (int i = 0; i < PROFESSIONS.length; i++) {
-            if (PROFESSIONS[i] == profession) return i;
+            if (PROFESSIONS[i].equals(profession)) return i;
         }
         return 0;
     }
